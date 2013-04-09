@@ -6,10 +6,12 @@
 var express = require('express')
   , routes = require('./routes')
   , imgur = require('./imgur.js')
+  , redis = require('redis')
   , http = require('http')
   , path = require('path');
 
 var app = express();
+var db = redis.createClient();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -34,5 +36,10 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
-setInterval(imgur.poll, 10000);
+var onNewItems = function(items) {
+    console.log(items);
+}
+
+setInterval(function() {imgur.poll(onNewItems);}, 10000);
+
 
