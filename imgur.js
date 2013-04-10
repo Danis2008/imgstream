@@ -33,7 +33,12 @@ exports.poll = function(feed, callback) {
             body += chunk;
         });
         res.on('end', function() {
-            processStream(JSON.parse(body).data, callback);
+            try {
+                var json = JSON.parse(body);
+                processStream(body.data, callback);
+            }
+            catch (e) {
+            }
         });
     });
     request.end();
