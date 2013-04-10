@@ -1,8 +1,7 @@
 
-var http = require('https')
-  , redis = require('redis');
+var http = require('https');
 
-var db = redis.createClient();
+var lastdate = 0;
 
 exports.feeds = {
     test: {
@@ -35,7 +34,7 @@ exports.poll = function(feed, callback) {
         res.on('end', function() {
             try {
                 var json = JSON.parse(body);
-                processStream(body.data, callback);
+                processStream(json.data, callback);
             }
             catch (e) {
             }
@@ -50,29 +49,21 @@ exports.poll = function(feed, callback) {
 var processStream = function(items, callback) {
     var newItems = Array();
 
-    db.hget('imgur', 'lastdate', function(err, reply) {
-        var lastdate = 0;
+    var latest = lastdate;
 
-        if (reply) {
-            lastdate = reply;
+    for (var i in items) {
+        var item = items[i];
+        if (item.datetime > lastdate && !item.is_album) {
+            latest = Math.max(item.datetime, latest);
+            newItems.push(item);
         }
+    }
 
-        var latest = lastdate;
-
-        for (var i in items) {
-            var item = items[i];
-            if (item.datetime > lastdate && !item.is_album) {
-                latest = Math.max(item.datetime, latest);
-                newItems.push(item);
-            }
-        }
-
-        newItems.sort(function(a, b) {
-            return a.datetime - b.datetime;
-        });
-
-        callback(newItems);
-
-        db.hset('imgur', 'lastdate', latest);
+    newItems.sort(function(a, b) {
+        return a.datetime - b.datetime;
     });
+
+    callback(newItems);
+
+    lastdate = latest;
 }

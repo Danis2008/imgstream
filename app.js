@@ -6,13 +6,11 @@
 var express = require('express')
   , routes = require('./routes')
   , imgur = require('./imgur.js')
-  , redis = require('redis')
   , http = require('http')
   , io = require('socket.io')
   , path = require('path');
 
 var app = express();
-var db = redis.createClient();
 
 // all environments
 app.set('port', process.env.PORT || 3000);
