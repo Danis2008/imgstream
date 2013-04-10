@@ -1,11 +1,32 @@
 
-var http = require('http')
+var http = require('https')
   , redis = require('redis');
 
 var db = redis.createClient();
 
-exports.poll = function(callback) {
-    var request = http.get('http://imgur.com/gallery/hot/time.json', function(res) {
+exports.feeds = {
+    test: {
+        host: 'erebus.seos.fr',
+        port: '5555',
+        path: '/plop.json',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Client-Id 121b759f2669cea',
+        }
+    },
+    new: {
+        host: 'api.imgur.com',
+        port: '443',
+        path: '/3/gallery/user/time/?showViral=true',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Client-Id 121b759f2669cea',
+        }
+    }
+};
+
+exports.poll = function(feed, callback) {
+    var request = http.request(feed, function(res) {
         res.setEncoding('utf8');
         var body = '';
         res.on('data', function(chunk) {
@@ -14,6 +35,10 @@ exports.poll = function(callback) {
         res.on('end', function() {
             processStream(JSON.parse(body).data, callback);
         });
+    });
+    request.end();
+    request.on('error', function(error) {
+        console.log(error);
     });
 }
 
@@ -31,17 +56,14 @@ var processStream = function(items, callback) {
 
         for (var i in items) {
             var item = items[i];
-            var date = Date.parse(item.hot_datetime);
-            if (date > lastdate) {
-                latest = Math.max(date, latest);
+            if (item.datetime > lastdate && !item.is_album) {
+                latest = Math.max(item.datetime, latest);
                 newItems.push(item);
             }
         }
 
         newItems.sort(function(a, b) {
-            var datea = Date.parse(a.hot_datetime);
-            var dateb = Date.parse(b.hot_datetime);
-            return datea - dateb;
+            return a.datetime - b.datetime;
         });
 
         callback(newItems);

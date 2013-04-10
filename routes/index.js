@@ -4,5 +4,5 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Stream' });
+  res.render('index', { title: 'Latest images from imgur.com' });
 };

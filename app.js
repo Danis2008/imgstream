@@ -37,7 +37,7 @@ var server = http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-io.listen(server);
+var io = io.listen(server);
 
 var onNewItems = function(items) {
     for (var i in items) {
@@ -45,5 +45,5 @@ var onNewItems = function(items) {
     }
 }
 
-setInterval(function() {imgur.poll(onNewItems);}, 10000);
+setInterval(function() {imgur.poll(imgur.feeds.new, onNewItems);}, 6000);
 
