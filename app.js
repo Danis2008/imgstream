@@ -45,5 +45,5 @@ var onNewItems = function(items) {
     }
 }
 
-setInterval(function() {imgur.poll(imgur.feeds.new, onNewItems);}, 6000);
+setInterval(function() {imgur.poll(imgur.feeds.new, onNewItems);}, 10000);
 
