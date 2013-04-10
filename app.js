@@ -8,6 +8,7 @@ var express = require('express')
   , imgur = require('./imgur.js')
   , redis = require('redis')
   , http = require('http')
+  , io = require('socket.io')
   , path = require('path');
 
 var app = express();
@@ -32,14 +33,17 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+var server = http.createServer(app).listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
 });
 
+io.listen(server);
+
 var onNewItems = function(items) {
-    console.log(items);
+    for (var i in items) {
+        io.sockets.emit('item', items[i]);
+    }
 }
 
 setInterval(function() {imgur.poll(onNewItems);}, 10000);
-
 
