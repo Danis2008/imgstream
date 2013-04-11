@@ -4,9 +4,12 @@ var onNewItem = function(item) {
     var link = document.createElement('a');
     link.href = item.link;
     link.title = item.title;
-    link.style.backgroundImage = "url('" + item.thumbnail + "')";
+    //link.style.backgroundImage = "url('" + item.thumbnail + "')";
+    link.className = item.room;
+    link.innerHTML = "<img src='" + item.thumbnail + "' /><span class='tags " + item.room + "'>" + item.room + "</span>";
     //link.dataset.powertip = '<img src="http://i.imgur.com/' + item.id + 'l.jpg" />';
 
+    /*
     if (item.width/item.height > 1.3) {
         // horizontal
         link.style.height = '160px';
@@ -20,6 +23,7 @@ var onNewItem = function(item) {
         link.style.height = '160px';
         link.style.width = '160px';
     }
+    */
 
     element.appendChild(link);
     $(element).powerTip();

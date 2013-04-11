@@ -22,3 +22,36 @@ li {
   position: fixed;
   top: 1em;
 }
+#filter label {
+  color: #000;
+}
+img {
+  max-width: 200px;
+  max-height: 200px;
+}
+.tags {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-bottom: 2px;
+  padding-right: 5px;
+  border-radius: 0 0 10px 0;
+  background: #000;
+  opacity: 0.5;
+  width: 13px;
+  transition: opacity 1s ease;
+  font-weight: bold;
+  color: transparent;
+}
+.flickr {
+  background: #ff0;
+}
+.imgur {
+  background: #008000;
+}
+li:hover .tags {
+  width: auto;
+  opacity: 1;
+  color: #000;
+  text-shadow: 0 0 7px #fff;
+}

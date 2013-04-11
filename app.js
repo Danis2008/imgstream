@@ -40,6 +40,7 @@ var io = io.listen(server);
 
 var onNewItems = function(items, room) {
     for (var i in items) {
+        items[i].room = room;
         io.sockets.in(room).emit('item', items[i]);
     }
 }
