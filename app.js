@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , imgur = require('./imgur.js')
+  , flickr = require('./flickr.js')
   , http = require('http')
   , io = require('socket.io')
   , path = require('path');
@@ -37,11 +38,27 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var io = io.listen(server);
 
-var onNewItems = function(items) {
+var onNewItems = function(items, room) {
     for (var i in items) {
-        io.sockets.emit('item', items[i]);
+        io.sockets.in(room).emit('item', items[i]);
     }
 }
 
-setInterval(function() {imgur.poll(imgur.feeds.new, onNewItems);}, 10000);
+io.sockets.on('connection', function (socket) {
+    socket.join('imgur');
+
+    socket.on('join', function(data) {
+        socket.join(data.room);
+    });
+
+    socket.on('leave', function(data) {
+        socket.leave(data.room);
+    });
+});
+
+setTimeout(function() {
+    setInterval(function() {imgur.poll(imgur.feeds.new, function(items) {onNewItems(items, 'imgur')});}, 10000);
+}, 5000);
+
+setInterval(function() {flickr.poll(flickr.feeds.new, function(items) {onNewItems(items, 'flickr')});}, 10000);
 

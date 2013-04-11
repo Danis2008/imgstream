@@ -55,7 +55,13 @@ var processStream = function(items, callback) {
         var item = items[i];
         if (item.datetime > lastdate && !item.is_album) {
             latest = Math.max(item.datetime, latest);
-            newItems.push(item);
+            newItems.push({
+                title: item.title,
+                thumbnail: 'http://i.imgur.com/' + item.id + 'm.jpg',
+                link: 'http://i.imgur.com/' + item.id + '.jpg',
+                width: item.width,
+                height: item.height
+            });
         }
     }
 

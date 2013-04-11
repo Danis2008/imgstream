@@ -17,3 +17,8 @@ ul,
 li {
   list-style-type: none;
 }
+#filter {
+  color: #fff;
+  position: fixed;
+  top: 1em;
+}

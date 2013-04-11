@@ -2,9 +2,10 @@
 var onNewItem = function(item) {
     var element = document.createElement('li');
     var link = document.createElement('a');
-    link.href = 'http://i.imgur.com/' + item.id + '.gif';
+    link.href = item.link;
     link.title = item.title;
-    link.style.backgroundImage = "url('http://i.imgur.com/" + item.id + "m.jpg')";
+    link.style.backgroundImage = "url('" + item.thumbnail + "')";
+    //link.dataset.powertip = '<img src="http://i.imgur.com/' + item.id + 'l.jpg" />';
 
     if (item.width/item.height > 1.3) {
         // horizontal
@@ -21,9 +22,14 @@ var onNewItem = function(item) {
     }
 
     element.appendChild(link);
+    $(element).powerTip();
     $(element).imagesLoaded(function() {
         $('ul').prepend(element).masonry('reload');
     });
+
+    if ($('li').length > 100) {
+        $('li:last').remove();
+    }
 }
 
 $('ul').masonry({
@@ -33,4 +39,14 @@ $('ul').masonry({
 
 var socket = io.connect();
 
+socket.emit('join', {room: 'imgur'});
+
 socket.on('item', onNewItem);
+
+$('#filter input').change(function() {
+    if ($(this).is(':checked')) {
+        socket.emit('join', {room: $(this).attr('id')});
+    } else {
+        socket.emit('leave', {room: $(this).attr('id')});
+    }
+});
