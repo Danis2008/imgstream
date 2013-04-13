@@ -51,8 +51,6 @@ $('ul').masonry({
 
 var socket = io.connect();
 
-socket.emit('join', {room: 'imgur'});
-
 socket.on('item', onNewItem);
 
 socket.on('disconnect', function() {
@@ -73,4 +71,5 @@ $('#filter input').change(function() {
     } else {
         socket.emit('leave', {room: $(this).attr('id')});
     }
-});
+}).change();
+
