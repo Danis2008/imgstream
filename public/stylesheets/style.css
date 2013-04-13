@@ -43,6 +43,15 @@ img {
   font-weight: bold;
   color: transparent;
 }
+.r-funny {
+  background: #00f;
+}
+.r-earthporn {
+  background: #ffa500;
+}
+.instagram {
+  background: #ffc0cb;
+}
 .flickr {
   background: #ff0;
 }

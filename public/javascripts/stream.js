@@ -6,7 +6,15 @@ var onNewItem = function(item) {
     link.title = item.title;
     //link.style.backgroundImage = "url('" + item.thumbnail + "')";
     link.className = item.room;
-    link.innerHTML = "<img src='" + item.thumbnail + "' /><span class='tags " + item.room + "'>" + item.room + "</span>";
+
+    var tags = item.room;
+
+    if (undefined != item.geo) {
+        console.log(item.geo);
+        tags += ' geo';
+    }
+
+    link.innerHTML = "<img src='" + item.thumbnail + "' /><span class='tags " + tags + "'>" + item.room + "</span>";
     //link.dataset.powertip = '<img src="http://i.imgur.com/' + item.id + 'l.jpg" />';
 
     /*
@@ -46,6 +54,18 @@ var socket = io.connect();
 socket.emit('join', {room: 'imgur'});
 
 socket.on('item', onNewItem);
+
+socket.on('disconnect', function() {
+    socket.on('connect', function() {
+        $('#filter input').each(function() {
+            if ($(this).is(':checked')) {
+                socket.emit('join', {room: $(this).attr('id')});
+            } else {
+                socket.emit('leave', {room: $(this).attr('id')});
+            }
+        });
+    });
+});
 
 $('#filter input').change(function() {
     if ($(this).is(':checked')) {

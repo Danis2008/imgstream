@@ -7,6 +7,7 @@ var express = require('express')
   , routes = require('./routes')
   , imgur = require('./imgur.js')
   , flickr = require('./flickr.js')
+  , instagram = require('./instagram.js')
   , http = require('http')
   , io = require('socket.io')
   , path = require('path');
@@ -29,8 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
-
-app.get('/', routes.index);
 
 var server = http.createServer(app).listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
@@ -57,9 +56,24 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-setTimeout(function() {
-    setInterval(function() {imgur.poll(imgur.feeds.new, function(items) {onNewItems(items, 'imgur')});}, 10000);
-}, 5000);
+var services = [imgur, flickr, instagram];
+var feeds = {};
+for (var i in services) {
+    var service = services[i];
 
-setInterval(function() {flickr.poll(flickr.feeds.new, function(items) {onNewItems(items, 'flickr')});}, 10000);
+    for (var j in service.feeds) {
+        var feed = service.feeds[j];
+        var id = feed.title.replace(/\//, '-');
+
+        feeds[id] = feed.title;
+    }
+
+    service.enable(onNewItems);
+}
+
+console.log(feeds);
+
+app.get('/', function(req, res){
+  res.render('index', { title: 'Latest images from the internets', feeds: feeds });
+});
 

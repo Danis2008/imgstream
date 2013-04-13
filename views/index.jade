@@ -3,8 +3,7 @@ extends layout
 block content
   h1= title
   form#filter
-    input#imgur(type='checkbox')(checked='checked')
-    label.imgur(for='imgur') imgur
-    input#flickr(type='checkbox')
-    label.flickr(for='flickr') flickr
+    each val, key in feeds
+        input(id='#{key}')(type='checkbox')(checked='checked')
+        label(class='#{key}')(for='#{key}') #{val}
   ul#items

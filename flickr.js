@@ -5,6 +5,8 @@ var lastid = 0;
 
 exports.feeds = {
     new: {
+        title: 'flickr',
+        period: 5000,
         host: 'api.flickr.com',
         port: '80',
         path: '/services/rest/?method=flickr.photos.getRecent&' +
@@ -14,6 +16,22 @@ exports.feeds = {
         method: 'GET'
     }
 };
+
+exports.enable = function(callback) {
+    for (var i in exports.feeds) {
+        var feed = exports.feeds[i];
+        setTimeout((function(feed) {return function() {
+            exports.poll(feed, function(items) {
+                callback(items, feed.title);
+            });}})(feed),
+            Math.random() * feed.period / 10);
+        setInterval((function(feed) {return function() {
+            exports.poll(feed, function(items) {
+                callback(items, feed.title);
+            });}})(feed),
+            feed.period);
+    }
+}
 
 exports.poll = function(feed, callback) {
     var request = http.request(feed, function(res) {
@@ -80,12 +98,17 @@ var processStream = function(items, callback) {
         var item = items.photo[i];
         if (item.id > lastid) {
             latest = Math.max(item.id, latest);
+            var geo = undefined;
+            if (item.latitude && item.longitude) {
+                geo = {latitude: item.latitude, longitude: item.longitude};
+            }
             newItems.push({
                 title: item.title,
                 thumbnail: item.url_m,
                 link: 'http://flic.kr/p/' + base58.encode(parseInt(item.id)),
                 width: item.width_l,
-                height: item.height_l
+                height: item.height_l,
+                geo: geo
             });
         }
     }
