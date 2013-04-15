@@ -34,6 +34,7 @@ exports.enable = function(callback) {
 }
 
 exports.poll = function(feed, callback) {
+    console.log('Polling: ' + feed.host + ':' + feed.port + feed.path);
     var request = http.request(feed, function(res) {
         res.setEncoding('utf8');
         var body = '';
@@ -108,6 +109,7 @@ var processStream = function(items, callback) {
                 link: 'http://flic.kr/p/' + base58.encode(parseInt(item.id)),
                 width: item.width_l,
                 height: item.height_l,
+                tags: item.tags.split(/ /),
                 geo: geo
             });
         }

@@ -51,6 +51,7 @@ exports.enable = function(callback) {
 }
 
 exports.poll = function(feed, callback) {
+    console.log('Polling: ' + feed.host + ':' + feed.port + feed.path);
     var proto = http;
     if (feed.port == '443') {
         proto = https;

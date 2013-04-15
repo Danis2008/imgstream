@@ -2,7 +2,10 @@ extends layout
 
 block content
   h1= title
+  h2
   form#filter
+    input(id='tags')(type='text')(placeholder='tag')
+    input(id='submit')(type='submit')(value='update')
     each val, key in feeds
         input(id='#{key}')(type='checkbox')(checked='checked')
         label(class='#{key}')(for='#{key}') #{val}
